@@ -3,18 +3,17 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 const server = express();
-const reactionsRouter  = require('./reactions/reactions-router')
+const reactionsRouter = require("./reactions/reactions-router");
 
 server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-server.use("/reactions", reactionsRouter)
+server.use("api/reactions", reactionsRouter);
 
 server.use("*", (_req, res) => {
   res.status(200).json({ message: "server up" });
 });
-
 
 // eslint-disable-next-line no-unused-vars
 server.use((err, _req, res, _next) => {
