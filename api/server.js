@@ -9,7 +9,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-server.use("api/reactions", reactionsRouter);
+server.use("/api/reactions", reactionsRouter);
 
 server.use("*", (_req, res) => {
   res.status(200).json({ message: "server up" });
