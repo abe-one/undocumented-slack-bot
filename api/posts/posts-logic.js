@@ -5,11 +5,8 @@ const requestHistory = async (formSubmissions) => {
 
   const formData = defaultFormData();
 
-  oldest =
-    oldest ||
-    new Date().getTime()(() =>
-      channel ? formData.append("channel", channel) : null
-    )();
+  oldest = oldest || new Date().getTime();
+  (() => (channel ? formData.append("channel", channel) : null))();
   //wrapping/invoking conditional inside function for stylistic reason
   formData.append("oldest", oldest);
 
