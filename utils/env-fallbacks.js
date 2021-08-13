@@ -1,7 +1,13 @@
 require("dotenv").config();
 
-exports.PORT = process.env.PORT || "5000";
+exports.PORT = process.env.PORT || "6000";
 exports.NODE_ENV = process.env.NODE_ENV || "development";
+
+exports.USER_AUTH_TOKEN = process.env.USER_AUTH_TOKEN
+exports.USER_COOKIE = process.env.USER_COOKIE
+exports.TEST_URL = process.env.TEST_URL
+exports.DEFAULT_CHANNEL = process.env.DEFAULT_CHANNEL
+
 
 exports.DATABASE_URL = process.env.DATABASE_URL;
 exports.DEV_DATABASE_URL = process.env.DEV_DATABASE_URL;
