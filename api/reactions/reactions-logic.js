@@ -1,7 +1,7 @@
 const { defaultFormData, axiosWithSlackAuth } = require("../../utils/utils");
 
 const postReaction = async (formSubmissions) => {
-  const { channel, reaction, timestamp } = formSubmissions;
+  const { channel, reaction, timestamp } = formSubmissions; //timestamp serves as post identifier
 
   const formData = defaultFormData();
 
