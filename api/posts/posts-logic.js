@@ -5,9 +5,10 @@ const requestHistory = async (formSubmissions) => {
 
   const formData = defaultFormData();
 
-  oldest = oldest || new Date().getTime();
+  oldest = oldest || `${new Date().getTime() / 1000 - 24 * 60 * 60}`;
+
   (() => (channel ? formData.append("channel", channel) : null))();
-  //wrapping/invoking conditional inside function for stylistic reason
+  //wrapping/invoking conditional inside function for stylistic reasons
   formData.append("oldest", oldest);
 
   const formDataHeaders = formData.getHeaders();
@@ -17,11 +18,15 @@ const requestHistory = async (formSubmissions) => {
       "/conversations.history",
       formData
     );
-    return response.data.messages;
+    return response.data;
     // Does not account for pagination of results
     // const cursor = response.data?.response_metadata.next_cursor
     // followup request to same endpoint, {...formData, cursor: cursor}
   } catch (err) {
     return err;
   }
+};
+
+module.exports = {
+  requestHistory,
 };
