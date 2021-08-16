@@ -5,7 +5,7 @@ const Reactions = require("./reactions-logic");
 //! NO VALIDATION NO SANITIZATION
 
 router.post("/celebrate", (req, res, next) => {
-  Reactions.postMultipleReactionsTo1Message(req.body)
+  Reactions.postMultipleReactionsToMultipleMessages(req.body)
     .then((slackResponses) => {
       res.status(201).json(slackResponses);
     })
