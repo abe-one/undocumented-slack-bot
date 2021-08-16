@@ -4,14 +4,14 @@ const cors = require("cors");
 
 const server = express();
 const reactionsRouter = require("./reactions/reactions-router");
-const postsRouter = require("./posts/posts-router");
+const postsRouter = require("./messages/messages-router");
 
 server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
 server.use("/api/reactions", reactionsRouter);
-server.use("/api/posts", postsRouter);
+server.use("/api/messages", postsRouter);
 
 server.use("*", (_req, res) => {
   res.status(200).json({ message: "server up" });

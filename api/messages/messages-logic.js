@@ -1,6 +1,6 @@
 const { defaultFormData, axiosWithSlackAuth } = require("../../utils/utils");
 
-const requestPosts = async (formSubmissions) => {
+const requestMessages = async (formSubmissions) => {
   let { channel, oldest, cursor } = formSubmissions;
 
   const formData = defaultFormData();
@@ -25,42 +25,44 @@ const requestPosts = async (formSubmissions) => {
   }
 };
 
-const filterPosts = (unfilteredPosts) => {
-  const cleanedPosts = unfilteredPosts.map((post) => {
+const filterMessages = (unfilteredMessages) => {
+  const cleanedMessages = unfilteredMessages.map((msg) => {
     const cleanedPost = {
-      timestamp: post.ts,
-      text: post.text,
+      timestamp: msg.ts,
+      text: msg.text,
       user: {
-        user_id: post.user,
-        username: post.user_profile.name,
+        user_id: msg.user,
+        username: msg.user_profile.name,
       },
     };
     return cleanedPost;
   });
 
-  return cleanedPosts;
+  return cleanedMessages;
 };
 
-const requestFilterAndConcatPosts = async (formSubmissions) => {
+const requestFilterAndConcatMessages = async (formSubmissions) => {
   try {
-    let unfilteredPosts = await requestPosts(formSubmissions);
-    let cleanedPosts = filterPosts(unfilteredPosts.messages);
+    let unfilteredMessages = await requestMessages(formSubmissions);
+    let cleanedMessages = filterMessages(unfilteredMessages.messages);
 
-    while (unfilteredPosts.has_more) {
+    while (unfilteredMessages.has_more) {
       formSubmissions = {
         ...formSubmissions,
-        cursor: unfilteredPosts.response_metadata.next_cursor,
+        cursor: unfilteredMessages.response_metadata.next_cursor,
       };
-      unfilteredPosts = await requestPosts(formSubmissions);
-      cleanedPosts = filterPosts(unfilteredPosts.messages).concat(cleanedPosts);
+      unfilteredMessages = await requestMessages(formSubmissions);
+      cleanedMessages = filterMessages(unfilteredMessages.messages).concat(
+        cleanedMessages
+      );
     }
 
-    return cleanedPosts;
+    return cleanedMessages;
   } catch (err) {
     return err;
   }
 };
 
 module.exports = {
-  requestFilterAndConcatPosts,
+  requestFilterAndConcatMessages,
 };

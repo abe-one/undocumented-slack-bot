@@ -1,6 +1,6 @@
 const { defaultFormData, axiosWithSlackAuth } = require("../../utils/utils");
 
-const postReaction = async (formSubmissions) => {
+const post1ReactionTo1Message = async (formSubmissions) => {
   const { channel, reaction, timestamp } = formSubmissions; //timestamp serves as post identifier
 
   const formData = defaultFormData();
@@ -24,12 +24,12 @@ const postReaction = async (formSubmissions) => {
   }
 };
 
-const celebrateAllPosts = (configObj) => {
+const postMultipleReactionsTo1Message = (configObj) => {
   const { reactions } = configObj;
 
   return Promise.allSettled(
     reactions.map((reaction) =>
-      postReaction({ ...configObj, reaction: reaction }).then(
+      post1ReactionTo1Message({ ...configObj, reaction: reaction }).then(
         (results) => results
       )
     )
@@ -37,6 +37,6 @@ const celebrateAllPosts = (configObj) => {
 };
 
 module.exports = {
-  postReaction,
-  celebrateAllPosts,
+  post1ReactionTo1Message,
+  postMultipleReactionsTo1Message,
 };
