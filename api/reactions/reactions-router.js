@@ -12,12 +12,18 @@ router.post("/custom", (req, res, next) => {
     .catch(next);
 });
 
-router.post("/test-cron/:frequency", (req, res, next) => {
-  Reactions.testCron(req.params.frequency)
-    .then((schedulingConfirmation) => {
-      res.status(200).json(schedulingConfirmation);
-    })
-    .catch(next);
+router.post("/test-cron/:frequency", async (req, res, next) => {
+  const frequency = Math.abs(parseInt(req.params.frequency));
+
+  try {
+    const schedulingConfirmation = await Reactions.scheduleReactions(
+      frequency,
+      req.body
+    );
+    res.status(200).json(schedulingConfirmation);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
