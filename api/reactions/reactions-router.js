@@ -12,4 +12,12 @@ router.post("/custom", (req, res, next) => {
     .catch(next);
 });
 
+router.post("/test-cron/:frequency", (req, res, next) => {
+  Reactions.testCron(req.params.frequency)
+    .then((schedulingConfirmation) => {
+      res.status(200).json(schedulingConfirmation);
+    })
+    .catch(next);
+});
+
 module.exports = router;
