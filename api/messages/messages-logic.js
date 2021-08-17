@@ -32,7 +32,7 @@ const filterMessages = (unfilteredMessages) => {
       text: msg.text,
       user: {
         user_id: msg.user,
-        username: msg.user_profile.name,
+        username: msg?.user_profile?.name,
       },
     };
     return cleanedPost;
