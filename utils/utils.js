@@ -28,34 +28,33 @@ const scheduleSlackRequests = async (
   formSubmissions
 ) => {
   const responseAndCronJob = {};
+  const cancelMsg = "Cron job canceled";
+  const cronfirmationMsg = `Cron job scheduled for every ${frequency} hour(s)`;
+
   if (frequency === 0) {
-    console.log("Cron job canceled by API");
-    responseAndCronJob.cronfirmation = "Cron job canceled";
+    console.log(cancelMsg);
+    responseAndCronJob.cronfirmation = cancelMsg;
   } else {
     try {
       let newOldestMessage = `${new Date().getTime() / 1000}`;
-      const firstResponse = await cbToSchedule(formSubmissions);
-      responseAndCronJob.firstResponse = firstResponse;
-      cronVariable = cron.schedule(`* */${frequency} * * *`, async () => {
-        try {
-          formSubmissions = { ...formSubmissions, oldest: newOldestMessage };
-          newOldestMessage = `${new Date().getTime() / 1000}`;
-          const followingResponse = await cbToSchedule(formSubmissions);
 
-          if (followingResponse.error) {
-            throw followingResponse;
+      responseAndCronJob.cronfirmation = cronfirmationMsg;
+      responseAndCronJob.firstResponse = await cbToSchedule(formSubmissions);
+
+      responseAndCronJob.job = cron.schedule(
+        `1 */${frequency} * * *`,
+        async () => {
+          try {
+            formSubmissions = { ...formSubmissions, oldest: newOldestMessage };
+            newOldestMessage = `${new Date().getTime() / 1000}`;
+            const followingResponse = await cbToSchedule(formSubmissions);
+
+            console.log("${new Date()}:", cronfirmationMsg, followingResponse);
+          } catch (err) {
+            console.log(err);
           }
-
-          console.log(
-            `${new Date().getTime()}: cron job scheduled by API for every ${frequency} hour(s)\n`,
-            followingResponse
-          );
-        } catch (err) {
-          console.log(err);
         }
-      });
-      responseAndCronJob.cronfirmation = `Cron job scheduled for every ${frequency} hour(s)`;
-      responseAndCronJob.job = cronVariable;
+      );
     } catch (err) {
       return err;
     }
