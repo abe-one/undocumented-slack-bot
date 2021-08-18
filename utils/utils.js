@@ -33,13 +33,17 @@ const scheduleSlackRequests = async (
     responseAndCronJob.cronfirmation = "Cron job canceled";
   } else {
     try {
+      let newOldestMessage = `${new Date().getTime() / 1000}`;
       const firstResponse = await cbToSchedule(formSubmissions);
       responseAndCronJob.firstResponse = firstResponse;
       cronVariable = cron.schedule(`* */${frequency} * * *`, async () => {
         try {
+          formSubmissions = { ...formSubmissions, oldest: newOldestMessage };
+          newOldestMessage = `${new Date().getTime() / 1000}`;
           const followingResponse = await cbToSchedule(formSubmissions);
+
           console.log(
-            `cron job scheduled by API for every ${frequency} hour(s): ${new Date().getSeconds()}`,
+            `${new Date().getTime()}: cron job scheduled by API for every ${frequency} hour(s)\n`,
             followingResponse
           );
         } catch (err) {
