@@ -2,6 +2,7 @@ const {
   defaultFormData,
   axiosWithSlackAuth,
   scheduleSlackRequests,
+  selectRandomArrayElements,
 } = require("../../utils/utils");
 const {
   requestFilterAndConcatMessages,
@@ -44,6 +45,8 @@ const postMultipleReactionsTo1Message = (formSubmissions) => {
 };
 
 const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
+  const { dynamic_reactions, dynamic_config } = formSubmissions;
+
   try {
     const messages = await requestFilterAndConcatMessages(formSubmissions);
 
@@ -59,6 +62,13 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
           timestamp,
           ...formSubmissions,
         };
+
+        if (dynamic_reactions) {
+          reactionConfigObj.reactions = selectRandomArrayElements(
+            formSubmissions.reactions,
+            dynamic_config?.reactions_per_message
+          );
+        }
 
         const postingResult = await postMultipleReactionsTo1Message(
           reactionConfigObj
