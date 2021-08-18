@@ -42,6 +42,10 @@ const scheduleSlackRequests = async (
           newOldestMessage = `${new Date().getTime() / 1000}`;
           const followingResponse = await cbToSchedule(formSubmissions);
 
+          if (followingResponse.error) {
+            throw followingResponse;
+          }
+
           console.log(
             `${new Date().getTime()}: cron job scheduled by API for every ${frequency} hour(s)\n`,
             followingResponse

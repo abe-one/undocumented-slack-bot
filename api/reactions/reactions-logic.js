@@ -47,6 +47,10 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
   try {
     const messages = await requestFilterAndConcatMessages(formSubmissions);
 
+    if (messages.error) {
+      throw messages;
+    }
+
     const postingResults = await Promise.all(
       messages.map(async (msg) => {
         const { timestamp } = msg;
