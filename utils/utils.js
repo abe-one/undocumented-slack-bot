@@ -64,9 +64,8 @@ const scheduleSlackRequests = async (
 
 const selectRandomArrayElements = (array, limit) => {
   limit = limit || 23;
-
   const randomizedSet = new Set();
-  console.log(randomizedSet);
+
   while (limit > 0) {
     const randomEl = array[Math.floor(Math.random() * array.length)];
     randomizedSet.add(randomEl);

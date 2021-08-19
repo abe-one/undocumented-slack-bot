@@ -56,7 +56,14 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
 
     const postingResults = await Promise.all(
       messages.map(async (msg) => {
-        const { timestamp } = msg;
+        const { timestamp, text } = msg;
+
+        if (!text.includes(dynamic_config?.trigger_string)) {
+          return {
+            status: "rejected",
+            value: `Message: '${text}' did not match trigger_string: '${dynamic_config.trigger_string}'`,
+          };
+        }
 
         const reactionConfigObj = {
           timestamp,
