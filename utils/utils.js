@@ -49,7 +49,7 @@ const scheduleSlackRequests = async (
             newOldestMessage = `${new Date().getTime() / 1000}`;
             const followingResponse = await cbToSchedule(formSubmissions);
 
-            console.log("${new Date()}:", cronfirmationMsg, followingResponse);
+            console.log(new Date(), ":", cronfirmationMsg, followingResponse);
           } catch (err) {
             console.log(err);
           }

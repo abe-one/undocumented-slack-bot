@@ -45,9 +45,13 @@ const postMultipleReactionsTo1Message = (formSubmissions) => {
 };
 
 const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
-  const { dynamic_reactions, dynamic_config } = formSubmissions;
+  const { dynamic_reactions, dynamic_config, timestamp } = formSubmissions;
 
   try {
+    if (timestamp) {
+      return postMultipleReactionsTo1Message(formSubmissions);
+    }
+
     const messages = await requestFilterAndConcatMessages(formSubmissions);
 
     if (messages.error) {
