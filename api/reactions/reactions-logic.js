@@ -103,7 +103,6 @@ const scheduleReactions = async (frequency, formSubmissions) => {
 
   try {
     const response = await scheduleSlackRequests(
-      cronJob,
       frequency,
       postMultipleReactionsToMultipleMessages,
       formSubmissions
