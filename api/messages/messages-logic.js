@@ -15,11 +15,23 @@ const requestMessages = async (formSubmissions) => {
   const formDataHeaders = formData.getHeaders();
 
   try {
-    const response = await axiosWithSlackAuth(formDataHeaders).post(
+    const { data } = await axiosWithSlackAuth(formDataHeaders).post(
       "/conversations.history",
       formData
     );
-    return response.data;
+    if (data.error) {
+      throw {
+        status: 500,
+        error: data.error,
+      };
+    }
+    if (data.messages.length === 0) {
+      throw {
+        status: 404,
+        error: "No messages found matching posted request",
+      };
+    }
+    return data;
   } catch (err) {
     return err;
   }
@@ -44,6 +56,11 @@ const filterMessages = (unfilteredMessages) => {
 const requestFilterAndConcatMessages = async (formSubmissions) => {
   try {
     let unfilteredMessages = await requestMessages(formSubmissions);
+
+    if (unfilteredMessages.error) {
+      throw unfilteredMessages;
+    }
+
     let cleanedMessages = filterMessages(unfilteredMessages.messages);
 
     while (unfilteredMessages.has_more) {

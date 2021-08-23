@@ -1,4 +1,9 @@
-const { defaultFormData, axiosWithSlackAuth } = require("../../utils/utils");
+const {
+  defaultFormData,
+  axiosWithSlackAuth,
+  scheduleSlackRequests,
+  selectRandomArrayElements,
+} = require("../../utils/utils");
 const {
   requestFilterAndConcatMessages,
 } = require("../messages/messages-logic");
@@ -40,17 +45,41 @@ const postMultipleReactionsTo1Message = (formSubmissions) => {
 };
 
 const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
+  const { dynamic_reactions, dynamic_config, timestamp } = formSubmissions;
+
   try {
+    if (timestamp) {
+      return postMultipleReactionsTo1Message(formSubmissions);
+    }
+
     const messages = await requestFilterAndConcatMessages(formSubmissions);
+
+    if (messages.error) {
+      throw messages;
+    }
 
     const postingResults = await Promise.all(
       messages.map(async (msg) => {
-        const { timestamp } = msg;
+        const { timestamp, text } = msg;
+
+        if (!text.includes(dynamic_config?.trigger_string)) {
+          return {
+            status: "rejected",
+            value: `Message: '${text}' did not match trigger_string: '${dynamic_config.trigger_string}'`,
+          };
+        }
 
         const reactionConfigObj = {
           timestamp,
           ...formSubmissions,
         };
+
+        if (dynamic_reactions) {
+          reactionConfigObj.reactions = selectRandomArrayElements(
+            formSubmissions.reactions,
+            dynamic_config?.reactions_per_message
+          );
+        }
 
         const postingResult = await postMultipleReactionsTo1Message(
           reactionConfigObj
@@ -65,8 +94,31 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
   }
 };
 
+let cronJob = {};
+
+const scheduleReactions = async (frequency, formSubmissions) => {
+  if (cronJob?.stop) {
+    cronJob.stop();
+  } //stop logic located in higher order function due to scoping issues
+
+  try {
+    const response = await scheduleSlackRequests(
+      cronJob,
+      frequency,
+      postMultipleReactionsToMultipleMessages,
+      formSubmissions
+    );
+    const { job, cronfirmation, firstResponse } = response;
+    cronJob = job;
+    return { cronfirmation, firstResponse };
+  } catch (err) {
+    return err;
+  }
+};
+
 module.exports = {
   post1ReactionTo1Message,
   postMultipleReactionsTo1Message,
   postMultipleReactionsToMultipleMessages,
+  scheduleReactions,
 };
