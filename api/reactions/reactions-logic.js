@@ -96,7 +96,7 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
 
 let cronJob = {};
 
-const scheduleReactions = async (frequency, formSubmissions) => {
+const scheduleReactions = async (frequency, formSubmissions, apiPath) => {
   if (cronJob?.stop) {
     cronJob.stop();
   } //stop logic located in higher order function due to scoping issues
@@ -105,7 +105,8 @@ const scheduleReactions = async (frequency, formSubmissions) => {
     const response = await scheduleSlackRequests(
       frequency,
       postMultipleReactionsToMultipleMessages,
-      formSubmissions
+      formSubmissions,
+      apiPath
     );
     return response;
   } catch (err) {

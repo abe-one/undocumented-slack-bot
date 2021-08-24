@@ -10,43 +10,51 @@ let cronJobs = [];
 const scheduleSlackRequests = async (
   frequency,
   cbToSchedule,
-  formSubmissions
+  formSubmissions,
+  apiPath
 ) => {
-  const responseAndCronJob = {};
-  const cancelMsg = "Cron job canceled";
+  const response = {};
   const cronfirmationMsg = `Cron job #${cronJobs.length} scheduled for every ${frequency} hour(s)`;
 
-  if (frequency === 0) {
-    //should be validated before being passed in
+  try {
+    let newOldestMessage = `${new Date().getTime() / 1000}`;
 
-    console.log(cancelMsg);
-    responseAndCronJob.cronfirmation = cancelMsg;
-  } else {
-    try {
-      let newOldestMessage = `${new Date().getTime() / 1000}`;
+    response.cronfirmation = cronfirmationMsg;
+    response.firstResponse = await cbToSchedule(formSubmissions);
 
-      responseAndCronJob.cronfirmation = cronfirmationMsg;
-      responseAndCronJob.firstResponse = await cbToSchedule(formSubmissions);
+    const newJob = cron.schedule(`0-59 */${frequency} * * *`, async () => {
+      try {
+        formSubmissions = { ...formSubmissions, oldest: newOldestMessage };
+        newOldestMessage = `${new Date().getTime() / 1000}`;
+        const followingResponse = await cbToSchedule(formSubmissions);
 
-      const newJob = cron.schedule(`1 */${frequency} * * *`, async () => {
-        try {
-          formSubmissions = { ...formSubmissions, oldest: newOldestMessage };
-          newOldestMessage = `${new Date().getTime() / 1000}`;
-          const followingResponse = await cbToSchedule(formSubmissions);
-
-          console.log(new Date(), ":", cronfirmationMsg, followingResponse);
-        } catch (err) {
-          console.log(err);
-        }
-      });
-      cronJobs.push(newJob);
-    } catch (err) {
-      return err;
-    }
+        console.log(new Date(), ":", cronfirmationMsg, followingResponse);
+      } catch (err) {
+        console.log(err);
+      }
+      console.log(cronfirmationMsg);
+      console.log(cronJobs);
+    });
+    cronJobs.push({
+      cron: newJob,
+      frequency: frequency,
+      active: true,
+      channel: formSubmissions.channel,
+      api_path: apiPath,
+      original_submissions: formSubmissions,
+    });
+  } catch (err) {
+    return err;
   }
-  return responseAndCronJob;
+  return response;
+};
+
+const getAllScheduledJobs = () => {
+  // jobs array should be objects including job, frequency, key form data
+  return cronJobs;
 };
 
 module.exports = {
   scheduleSlackRequests,
+  getAllScheduledJobs,
 };
