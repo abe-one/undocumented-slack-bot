@@ -14,7 +14,7 @@ const scheduleSlackRequests = async (
   apiPath
 ) => {
   const response = {};
-  const cronfirmationMsg = `Cron job #${cronJobs.length} scheduled for every ${frequency} hour(s)`;
+  const cronfirmationMsg = `cron job #${cronJobs.length} scheduled for every ${frequency} hour(s)`;
 
   try {
     let newOldestMessage = `${new Date().getTime() / 1000}`;
@@ -33,7 +33,6 @@ const scheduleSlackRequests = async (
         console.log(err);
       }
       console.log(cronfirmationMsg);
-      console.log(cronJobs);
     });
     cronJobs.push({
       cron: newJob,
@@ -50,11 +49,34 @@ const scheduleSlackRequests = async (
 };
 
 const getAllScheduledJobs = () => {
-  // jobs array should be objects including job, frequency, key form data
-  return cronJobs;
+  const cronJobsMeta = cronJobs.map((job) => {
+    if (job) {
+      delete job.cron;
+      delete job.original_submissions;
+      return job;
+    } else {
+      return "DELETED";
+    }
+  });
+  return cronJobsMeta;
+};
+
+const toggleJobOnOff = (id, toggle) => {
+  const job = cronJobs[id];
+
+  if (toggle === "on") {
+    job.cron.start();
+    job.active = true;
+    return "active";
+  } else {
+    job.cron.stop();
+    job.active = false;
+    return "inactive";
+  }
 };
 
 module.exports = {
   scheduleSlackRequests,
   getAllScheduledJobs,
+  toggleJobOnOff,
 };
