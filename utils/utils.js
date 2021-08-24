@@ -22,7 +22,6 @@ const axiosWithSlackAuth = (headers) =>
   });
 
 const scheduleSlackRequests = async (
-  cronVariable,
   frequency,
   cbToSchedule,
   formSubmissions
