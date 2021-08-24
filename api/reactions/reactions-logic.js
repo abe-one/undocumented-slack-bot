@@ -1,12 +1,12 @@
 const {
   defaultFormData,
   axiosWithSlackAuth,
-  scheduleSlackRequests,
   selectRandomArrayElements,
 } = require("../../utils/utils");
 const {
   requestFilterAndConcatMessages,
 } = require("../messages/messages-logic");
+const { scheduleSlackRequests } = require("../schedules/schedules-logic");
 
 const post1ReactionTo1Message = async (formSubmissions) => {
   const { channel, reaction, timestamp } = formSubmissions; //timestamp serves as post identifier
@@ -107,9 +107,7 @@ const scheduleReactions = async (frequency, formSubmissions) => {
       postMultipleReactionsToMultipleMessages,
       formSubmissions
     );
-    const { job, cronfirmation, firstResponse } = response;
-    cronJob = job;
-    return { cronfirmation, firstResponse };
+    return response;
   } catch (err) {
     return err;
   }
