@@ -20,10 +20,10 @@ router.get("/:scheduleId", (req, res) => {
 });
 
 router.patch("/:scheduleId/:toggle", (req, res) => {
-  const id = req.params.scheduleId;
-  const jobStatus = Schedules.toggleJobOnOff(id);
+  const { scheduleId: id, toggle } = req.params;
+  const jobStatus = Schedules.toggleJobOnOff(id, toggle);
 
-  res.status(200).json({ message: `job ${id} was toggled ${jobStatus}` });
+  res.status(200).json({ message: `job ${id} was toggled to ${jobStatus}` });
 });
 
 router.delete("/:scheduleId", (req, res) => {
@@ -32,3 +32,5 @@ router.delete("/:scheduleId", (req, res) => {
 
   res.status(200).json({ message: `job ${id} deleted` });
 });
+
+module.exports = router;
