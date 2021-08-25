@@ -45,11 +45,18 @@ const postMultipleReactionsTo1Message = (formSubmissions) => {
 };
 
 const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
-  const { dynamic_reactions, dynamic_config, timestamp } = formSubmissions;
+  const { dynamic_reactions, dynamic_config, timestamp, reactions } =
+    formSubmissions;
+
+  const reactionConfigObj = { ...formSubmissions };
 
   try {
     if (timestamp) {
-      return postMultipleReactionsTo1Message(formSubmissions);
+      reactionConfigObj.reactions = selectRandomArrayElements(
+        reactions,
+        dynamic_config?.reactions_per_message
+      );
+      return postMultipleReactionsTo1Message(reactionConfigObj);
     }
 
     const messages = await requestFilterAndConcatMessages(formSubmissions);
@@ -76,7 +83,7 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
 
         if (dynamic_reactions) {
           reactionConfigObj.reactions = selectRandomArrayElements(
-            formSubmissions.reactions,
+            reactions,
             dynamic_config?.reactions_per_message
           );
         }
@@ -94,13 +101,7 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
   }
 };
 
-let cronJob = {};
-
 const scheduleReactions = async (frequency, formSubmissions, apiPath) => {
-  if (cronJob?.stop) {
-    cronJob.stop();
-  } //stop logic located in higher order function due to scoping issues
-
   try {
     const response = await scheduleSlackRequests(
       frequency,
