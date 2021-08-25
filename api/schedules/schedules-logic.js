@@ -56,14 +56,27 @@ const getAllScheduledJobs = () => {
       delete jobMeta.original_submissions;
       return jobMeta;
     } else {
-      return "DELETED";
+      return "deleted";
     }
   });
   return cronJobsMeta;
 };
 
+const getScheduledJobById = (id) => {
+  id = parseInt(id); //todo replace this line with validation/sanitization middleware
+  const job = cronJobs[id];
+
+  if (job) {
+    let trimJob = { ...job, id: id };
+    delete trimJob.cron;
+    return trimJob;
+  } else {
+    return "deleted";
+  }
+};
+
 const toggleJobOnOff = (id, toggle) => {
-  id = parseInt(id);
+  id = parseInt(id); //todo replace this line with validation/sanitization middleware
   const job = cronJobs[id];
 
   if (toggle === "on") {
@@ -85,6 +98,7 @@ const deleteJobById = (id) => {
 module.exports = {
   scheduleSlackRequests,
   getAllScheduledJobs,
+  getScheduledJobById,
   toggleJobOnOff,
   deleteJobById,
 };
