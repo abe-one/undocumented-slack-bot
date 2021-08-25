@@ -54,7 +54,7 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
     if (timestamp) {
       reactionConfigObj.reactions = selectRandomArrayElements(
         reactions,
-        dynamic_config?.reactions_per_message
+        dynamic_config?.reactions_per_message || 23
       );
       return postMultipleReactionsTo1Message(reactionConfigObj);
     }
@@ -84,7 +84,7 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
         if (dynamic_reactions) {
           reactionConfigObj.reactions = selectRandomArrayElements(
             reactions,
-            dynamic_config?.reactions_per_message
+            dynamic_config?.reactions_per_message || 23
           );
         }
 

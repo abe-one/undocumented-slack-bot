@@ -21,7 +21,6 @@ const axiosWithSlackAuth = (headers) =>
   });
 
 const selectRandomArrayElements = (array, limit) => {
-  limit = limit || 23;
   const randomizedSet = new Set();
 
   while (limit > 0) {
