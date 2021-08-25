@@ -1,12 +1,12 @@
 const {
   defaultFormData,
   axiosWithSlackAuth,
-  scheduleSlackRequests,
   selectRandomArrayElements,
 } = require("../../utils/utils");
 const {
   requestFilterAndConcatMessages,
 } = require("../messages/messages-logic");
+const { scheduleSlackRequests } = require("../schedules/schedules-logic");
 
 const post1ReactionTo1Message = async (formSubmissions) => {
   const { channel, reaction, timestamp } = formSubmissions; //timestamp serves as post identifier
@@ -45,11 +45,18 @@ const postMultipleReactionsTo1Message = (formSubmissions) => {
 };
 
 const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
-  const { dynamic_reactions, dynamic_config, timestamp } = formSubmissions;
+  const { dynamic_reactions, dynamic_config, timestamp, reactions } =
+    formSubmissions;
+
+  const reactionConfigObj = { ...formSubmissions };
 
   try {
     if (timestamp) {
-      return postMultipleReactionsTo1Message(formSubmissions);
+      reactionConfigObj.reactions = selectRandomArrayElements(
+        reactions,
+        dynamic_config?.reactions_per_message || 23
+      );
+      return postMultipleReactionsTo1Message(reactionConfigObj);
     }
 
     const messages = await requestFilterAndConcatMessages(formSubmissions);
@@ -76,8 +83,8 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
 
         if (dynamic_reactions) {
           reactionConfigObj.reactions = selectRandomArrayElements(
-            formSubmissions.reactions,
-            dynamic_config?.reactions_per_message
+            reactions,
+            dynamic_config?.reactions_per_message || 23
           );
         }
 
@@ -94,22 +101,15 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
   }
 };
 
-let cronJob = {};
-
-const scheduleReactions = async (frequency, formSubmissions) => {
-  if (cronJob?.stop) {
-    cronJob.stop();
-  } //stop logic located in higher order function due to scoping issues
-
+const scheduleReactions = async (frequency, formSubmissions, apiPath) => {
   try {
     const response = await scheduleSlackRequests(
       frequency,
       postMultipleReactionsToMultipleMessages,
-      formSubmissions
+      formSubmissions,
+      apiPath
     );
-    const { job, cronfirmation, firstResponse } = response;
-    cronJob = job;
-    return { cronfirmation, firstResponse };
+    return response;
   } catch (err) {
     return err;
   }

@@ -10,7 +10,8 @@ router.post("/custom/:frequency", async (req, res, next) => {
   try {
     const schedulingConfirmation = await Reactions.scheduleReactions(
       frequency,
-      req.body
+      req.body,
+      req.originalUrl
     );
     res.status(200).json(schedulingConfirmation);
   } catch (err) {
