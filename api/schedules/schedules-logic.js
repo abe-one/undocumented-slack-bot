@@ -22,7 +22,7 @@ const scheduleSlackRequests = async (
     response.cronfirmation = cronfirmationMsg;
     response.firstResponse = await cbToSchedule(formSubmissions);
 
-    const newJob = cron.schedule(`0-59 */${frequency} * * *`, async () => {
+    const newJob = cron.schedule(`1 */${frequency} * * *`, async () => {
       try {
         formSubmissions = { ...formSubmissions, oldest: newOldestMessage };
         newOldestMessage = `${new Date().getTime() / 1000}`;
