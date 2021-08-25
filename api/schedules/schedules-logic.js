@@ -51,9 +51,10 @@ const scheduleSlackRequests = async (
 const getAllScheduledJobs = () => {
   const cronJobsMeta = cronJobs.map((job) => {
     if (job) {
-      delete job.cron;
-      delete job.original_submissions;
-      return job;
+      let jobMeta = { ...job };
+      delete jobMeta.cron;
+      delete jobMeta.original_submissions;
+      return jobMeta;
     } else {
       return "DELETED";
     }
@@ -62,21 +63,28 @@ const getAllScheduledJobs = () => {
 };
 
 const toggleJobOnOff = (id, toggle) => {
+  id = parseInt(id);
   const job = cronJobs[id];
 
   if (toggle === "on") {
     job.cron.start();
     job.active = true;
     return "active";
-  } else {
+  } else if (toggle === "off") {
     job.cron.stop();
     job.active = false;
     return "inactive";
   }
 };
 
+const deleteJobById = (id) => {
+  toggleJobOnOff(id, "off");
+  return (cronJobs[id] = null);
+};
+
 module.exports = {
   scheduleSlackRequests,
   getAllScheduledJobs,
   toggleJobOnOff,
+  deleteJobById,
 };
