@@ -52,10 +52,12 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
 
   try {
     if (timestamp) {
-      reactionConfigObj.reactions = selectRandomArrayElements(
-        reactions,
-        dynamic_config?.reactions_per_message || 23
-      );
+      if (dynamic_reactions) {
+        reactionConfigObj.reactions = selectRandomArrayElements(
+          reactions,
+          dynamic_config?.reactions_per_message || 23
+        );
+      }
       return postMultipleReactionsTo1Message(reactionConfigObj);
     }
 
@@ -86,6 +88,14 @@ const postMultipleReactionsToMultipleMessages = async (formSubmissions) => {
             reactions,
             dynamic_config?.reactions_per_message || 23
           );
+
+          if (dynamic_config.optional_trigger_strings.length > 0) {
+            dynamic_config.optional_trigger_strings.map((trigger) => {
+              if (text.includes(trigger.trigger_string)) {
+                reactionConfigObj.reactions.push(...trigger.reactions);
+              }
+            });
+          }
         }
 
         const postingResult = await postMultipleReactionsTo1Message(
