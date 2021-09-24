@@ -1,9 +1,7 @@
-export { }
+import { PORT } from "./utils/env-fallbacks"
 
-const { PORT } = require("./utils/env-fallbacks");
+import server from "./api/server";
 
-const server = require("./api/server");
-
-server.listen(PORT, () => {
+server.listen(PORT, (): void => {
   console.log("listening on", PORT);
 });

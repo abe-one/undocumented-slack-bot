@@ -26,4 +26,4 @@ server.use((err, _req, res, _next) => {
   });
 });
 
-module.exports = server;
+export default server;
