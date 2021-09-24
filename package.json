@@ -1,11 +1,11 @@
 {
   "name": "undocumented-slack-bot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon index.js"
+    "server": "nodemon src/index.js"
   },
   "engines": {
     "node": "14.16.0",
@@ -16,6 +16,7 @@
   "keywords": [],
   "description": "",
   "devDependencies": {
+    "@types/node": "^16.9.6",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "nodemon": "^2.0.12"
