@@ -1,3 +1,5 @@
+export { }
+
 const router = require("express").Router();
 
 const Reactions = require("./reactions-logic");

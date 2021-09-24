@@ -1,5 +1,5 @@
+export { }
 const router = require("express").Router();
-
 const Posts = require("./messages-logic");
 
 //! NO VALIDATION NO SANITIZATION

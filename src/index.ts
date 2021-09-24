@@ -1,3 +1,5 @@
+export { }
+
 const { PORT } = require("./utils/env-fallbacks");
 
 const server = require("./api/server");
